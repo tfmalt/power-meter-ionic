@@ -26,13 +26,23 @@
   <body ng-app="power">
     <ion-side-menus>
         <ion-side-menu-content ng-controller="PowerCtrl">
-            <ion-header-bar class="bar-balanced" style="background-color: #00b67a">
-                <button on-tap="toggleLeft()" class="button button-icon icon ion-navicon-round"></button>
-                <h1 class="title">Power Meter</h1>
-            </ion-header-bar>
-            <ion-content>
-                <div style="width: 320px; height: 260px; display: inline-block" id="meter"></div>
-            </ion-content>
+            <ion-slide-box style="height: 100%;" on-slide-changed="slideHasChanged($index)">
+                <ion-slide>
+                    <div class="box" style="min-height: 100%; background-color: #d00">
+                    <button on-tap="toggleLeft()" 
+                        style="background-color: #d00" class="button button-icon icon ion-navicon-round">
+                    </button>
+                        <div id="meter" 
+                            style="width: 320px; height: 260px; display: inline-block"></div>
+                    </div>  
+                </ion-slide>
+                <ion-slide>
+                    <div class="box pink" style="background-color: pink; height: 100%;">
+                        <h1>TEST</h1>
+                </div>
+                </ion-pane>
+                </ion-slide>
+            </ion-slide-box>
         </ion-side-menu-content>
         <ion-side-menu side="left">
             <ion-header-bar class="bar-dark">

@@ -12,14 +12,14 @@ meter.initialize = function() {
         value: 0,
         min: 0,
         max: 12500,
-        title: "Simon Darres vei 60",
-        label: "kWh"
+        title: "Power Usage Now",
+        label: "Watts"
     });
 }
 
-angular.module('power', ['ionic'])
+var app = angular.module('power', ['ionic'])
 
-.run(function($ionicPlatform) {
+app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the 
     // accessory bar above the keyboard
@@ -33,8 +33,9 @@ angular.module('power', ['ionic'])
 
     meter.initialize();
   });
-})
-.controller('PowerCtrl', function ($scope, $http, $interval, $ionicSideMenuDelegate) {
+});
+
+app.controller('PowerCtrl', function ($scope, $http, $interval, $ionicSlideBoxDelegate, $ionicSideMenuDelegate) {
     $scope.toggleLeft = function() {
         $ionicSideMenuDelegate.toggleLeft();
     };
@@ -48,4 +49,8 @@ angular.module('power', ['ionic'])
             meter.gauge.refresh(res.data.watt);
         });
     }, 2000);
+
+    var getUsageLastHour = $interval(function () {
+
+    });
 });
