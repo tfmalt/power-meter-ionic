@@ -9,13 +9,13 @@ meter.initialize = function() {
         id: "meter",
         value: 0,
         min: 0,
-        max: 12500,
-        title: "Power Usage Now",
+        max: 12000,
+        title: "Power Consumption",
         label: "Watts"
     });
 };
 
-var app = angular.module('power', ['ionic']);
+var app = angular.module('power', ['ionic', 'powerServices']);
 
 app.run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -33,22 +33,18 @@ app.run(function($ionicPlatform) {
   });
 });
 
-app.controller('PowerCtrl', function ($scope, $http, $interval, $ionicSlideBoxDelegate, $ionicSideMenuDelegate) {
-    $scope.toggleLeft = function() {
-        $ionicSideMenuDelegate.toggleLeft();
-    };
+app.controller('PowerCtrl', ['$scope', 'Power', '$interval',
+    '$ionicSlideBoxDelegate', '$ionicSideMenuDelegate',
+    function($scope, Power, $interval, $ionicSlideBoxDelegate, $ionicSideMenuDelegate) {
+        $scope.toggleLeft = function() {
+            $ionicSideMenuDelegate.toggleLeft();
+        };
 
-    $http.get('https://api.malt.no/power/watts/10').then(function (res) {
-        meter.gauge.refresh(res.data.watt);
-    });
-    var stopWattNow = $interval(function () {
-        $http.get('https://api.malt.no/power/watts/10').then(function (res) {
-            // console.log("Got data:", res.data.watt);
-            meter.gauge.refresh(res.data.watt);
-        });
-    }, 2000);
+        $interval(function () {
+            Power.get({service: 'watts', interval: 10}).$promise.then(function(p) {
+                meter.gauge.refresh(p.watt);
+            });
+        }, 2000);
+    }
+]);
 
-    var getUsageLastHour = $interval(function () {
-
-    });
-});
