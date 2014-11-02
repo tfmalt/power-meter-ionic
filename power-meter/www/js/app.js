@@ -34,23 +34,6 @@ app.run(function($ionicPlatform) {
         }
 
         meter.initialize();
-
-        hourChart = c3.generate({
-            bindto: '#hourChart',
-            size: { height: 120 },
-            legend: { show: false },
-            data: {
-                columns: [
-                    ['data1', 30, 200, 100, 300, 280, 220, 150, 250]
-                ],
-                types: {
-                    data1: 'area'
-                },
-                colors: {
-                    data1: '#43cee6'
-                }
-            }
-        });
     });
 });
 
@@ -84,6 +67,42 @@ app.controller('PowerCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
                 $scope.kwhToday = d.kwh.toFixed(2);
             });
         }, 60000);
+
+        hourChart = c3.generate({
+            bindto: '#hourChart',
+            size: { height: 100 },
+            legend: { show: false },
+            point: { show: false },
+            axis: {
+                x: {
+                    show: true,
+                    tick: {
+                        count: 4
+                    }
+                }
+            },
+            data: {
+                x: 'x',
+                types: {
+                    data1: 'area'
+                },
+                colors: {
+                    data1: '#43cee6'
+                }
+            }
+        });
+
+        PowerWatts.get({interval: 'hour'}, function (d) {
+            console.log("got watts hour: ", d.items);
+            var values = d.items.map(function(item) { return item[1]; });
+            values.unshift('data1');
+            console.log("values:" , values);
+            hourChart.load({
+                columns: [
+                    values
+                ]
+            })
+        });
 
         PowerWatts.get({interval: 10}, function(p) {
             meter.gauge.refresh(p.watt);
