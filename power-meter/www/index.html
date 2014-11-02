@@ -4,18 +4,19 @@
     <meta charset="utf-8">
     <meta name="viewport"
           content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta name="format-detection" content="telephone=no">
     <title>Power Meter Dashboard</title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link href="lib/c3/c3.css" rel="stylesheet">
 
-    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
-    <link href="css/ionic.app.css" rel="stylesheet">
-    -->
+    <script src="lib/d3/d3.min.js" charset="utf-8"></script>
+    <script src="lib/c3/c3.min.js"></script>
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
-    <script src="lib/ionic/js/angular/angular-resource.min.js"></script>
+    <script src="lib/angular-resource/angular-resource.min.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
@@ -36,26 +37,83 @@
                     <button on-tap="toggleLeft()"
                         class="button button-icon icon ion-navicon-round">
                     </button>
-                    <h1 class="title">Power Usage</h1>
+                    <h1 class="title">Current Usage</h1>
                 </ion-header-bar>
-                <ion-content>
-                    <div id="meter"
-                         style="width: 320px; height: 260px; display: inline-block"></div>
-                </ion-content>
+                <ion-pane>
+                    <div class="box" style="">
+                        <div id="meter"
+                             style="width: 320px; height: 260px; display: inline-block;
+                             "></div>
+                        <div id="total" style="text-align: center; position: relative; top: -12px">
+                            <h3>Meter total KWh</h3>
+                            <div class="box">
+                                <span class="totalKwh">{{meterTotal}}</span>
+                                <span class="totalDecimal">{{meterDecimal}}</span>
+                            </div>
+                            </div>
+                        <div id="daily">
+
+                            <table style="width: 100%;">
+                                <tr id="totals-summary-row"
+                                    style="width: 100%">
+                                    <td style="padding: 8px">
+                                        <h3 style="font-size: 20px;
+                                            font-weight: 200;
+                                            color: #666; margin: 0 0 4px 0">
+                                            Yesterday
+                                        </h3>
+                                        <span class="kwh-day"
+                                              style="font-size: 24px;
+                                              font-weight: 500">
+                                            {{kwhYesterday}}
+                                        </span>
+                                        <span>kWh</span>
+                                    </td>
+                                    <td>
+                                        <h3 style="font-size: 20px;
+                                            font-weight: 200;
+                                            color: #666;
+                                            margin: 0 0 4px 0">
+                                            Today
+                                        </h3>
+                                        <span class="kwh-day"
+                                              style="font-size: 24px; font-weight: 500">{{kwhToday}}</span>
+                                        <span>kWh</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="hourChart"></div>
+                </ion-pane>
             </ion-slide>
             <ion-slide>
                 <ion-header-bar class="bar-energized">
                     <button on-tap="toggleLeft()"
                             class="button button-icon icon ion-navicon-round">
                     </button>
-                    <h1 class="title">Power Usage</h1>
+                    <h1 class="title">Weekly Graphs</h1>
                 </ion-header-bar>
                 <ion-pane>
                     <div class="box pink"
-                         style="background-color: pink; height: 100%;">
+                         style="background-color: pink; min-height: 100%;
+                         margin-top: 32px; padding: 12px">
                         <h1>TEST</h1>
                     </div>
                 </ion-pane>
+            </ion-slide>
+            <ion-slide>
+                <ion-header-bar class="bar-assertive">
+                    <button on-tap="toggleLeft()"
+                            class="button button-icon icon ion-navicon-round">
+                    </button>
+                    <h1 class="title">Monthly Graphs</h1>
+                </ion-header-bar>
+                <ion-content>
+                    <div class="box" style="padding: 8px">
+                        More graphs will come here.
+                    </div>
+                </ion-content>
             </ion-slide>
         </ion-slide-box>
     </ion-side-menu-content>
