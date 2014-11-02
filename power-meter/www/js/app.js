@@ -19,23 +19,78 @@ var hourChart = {};
 
 var app = angular.module('power', ['ionic', 'powerServices']);
 
-app.run(function($ionicPlatform) {
+app.run(['$ionicPlatform', 'PowerWatts',
+    function ($ionicPlatform, PowerWatts) {
     $ionicPlatform.ready(function () {
-        // Hide the accessory bar by default (remove this to show the
-        // accessory bar above the keyboard
-        // for form inputs)
-        // console.log("Running app.run");
-        // if (window.cordova && window.cordova.plugins.Keyboard) {
-        //     cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-        // }
-
         if (window.StatusBar) {
             StatusBar.styleDefault();
         }
 
         meter.initialize();
+
+        PowerWatts.get({interval: 'hour'}, function (d) {
+            console.log("got watts hour in app.run: ", d.items);
+            var values = d.items.map(function(item) { return item[1]; });
+            var times  = d.items.map(function(item) { return item[0]; });
+
+            values.unshift('data1');
+            times.unshift('x');
+            console.log("values in app run:" , values);
+            console.log("times in app run:", times);
+            hourChart = c3.generate({
+                bindto: '#hourChart',
+                size: { height: 144 },
+                padding: {
+                    left: 20,
+                    right: 20,
+                    top: 0,
+                    bottom: 0
+                },
+                legend: { show: false },
+                point: { show: false },
+                axis: {
+                    x: {
+                        show: true,
+                        tick: {
+                            count: 12
+                        },
+                        type: 'categorized'
+                    },
+                    y: {
+                        show: false,
+                        tick: {
+                            count: 4
+                        }
+                    }
+                },
+                grid: {
+                    y: {
+                        lines: [
+                            {value: 2000, text: '2000 Watts'},
+                            {value: 4000, text: '4000 Watts'},
+                            {value: 4000, text: '6000 Watts'},
+                            {value: 4000, text: '8000 Watts'}
+                        ]
+                    }
+                },
+                data: {
+                    x: 'x',
+                    columns: [
+                        times,
+                        values
+                    ],
+                    types: {
+                        data1: 'area'
+                    },
+                    colors: {
+                        data1: '#43cee6'
+                    }
+                }
+            });
+
+        });
     });
-});
+}]);
 
 app.controller('PowerCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKwh', '$interval',
     '$ionicSlideBoxDelegate', '$ionicSideMenuDelegate',
@@ -68,41 +123,23 @@ app.controller('PowerCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
             });
         }, 60000);
 
-        hourChart = c3.generate({
-            bindto: '#hourChart',
-            size: { height: 100 },
-            legend: { show: false },
-            point: { show: false },
-            axis: {
-                x: {
-                    show: true,
-                    tick: {
-                        count: 4
-                    }
-                }
-            },
-            data: {
-                x: 'x',
-                types: {
-                    data1: 'area'
-                },
-                colors: {
-                    data1: '#43cee6'
-                }
-            }
-        });
+        $interval(function () {
+            PowerWatts.get({interval: 'hour'}, function (d) {
+                var values = d.items.map(function(item) { return item[1]; });
+                var times  = d.items.map(function(item) { return item[0]; });
 
-        PowerWatts.get({interval: 'hour'}, function (d) {
-            console.log("got watts hour: ", d.items);
-            var values = d.items.map(function(item) { return item[1]; });
-            values.unshift('data1');
-            console.log("values:" , values);
-            hourChart.load({
-                columns: [
-                    values
-                ]
-            })
-        });
+                values.unshift('data1');
+                times.unshift('x');
+                console.log("Got watts hour: ", Date());
+
+                hourChart.load({
+                    columns: [
+                        times,
+                        values
+                    ]
+                })
+            });
+        }, 60000);
 
         PowerWatts.get({interval: 10}, function(p) {
             meter.gauge.refresh(p.watt);
