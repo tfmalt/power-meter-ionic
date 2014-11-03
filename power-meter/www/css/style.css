@@ -7,54 +7,97 @@
 }
 
 div#meter {
-    width: 320px;
-    height: 260px;
+    width: 100%;
+    height: 300px;
     display: inline-block;
+    position: relative;
+    top: 72px;
 }
 
 div#total {
     text-align: center;
     position: relative;
-    top: -46px;
+    top: 118px;
 }
 
-div#total span {
-    display: inline;
-    font-family: Inconsolata, monospace;
-    font-size: 54px;
-    margin: 0;
-    padding-top: 4px;
-    padding-bottom: 0;
-    padding-left: 6px;
-    padding-right: 6px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0) 25%,rgba(0,0,0,0.10) 100%); /* W3C */
-    border: 1px solid #ccc;
+div#hourChartBox {
+    text-align: center;
+    position: relative;
+    top: -166px;
 }
+
 div#hourChart {
     position: relative;
-    top: -36px;
+    top: -6px;
 }
-
 div#daily {
     text-align: center;
     position: relative;
-    top: -40px;
+    top: -172px;
 }
 
-div#total h3 {
-    font-size: 20px;
-    color: #666;
+div#watts {
+    text-align: center;
+    position: relative;
+    top: -136px;
+}
+
+div#watts .value {
+    font-size: 36px;
+    font-weight: 400;
+}
+
+div#watts .unit {
+    font-size: 18px;
     font-weight: 200;
-    padding: 0;
-    margin: 0px 0px 16px 0px;
+    display: block;
+    color: #666;
 }
 
 div#total .box {
     display: inline-block;
-    margin: 12px 0 8px 0;
-    /* padding: 0 42px 0 42px; */
+    margin: 0px 0 8px 0;
 }
 
+div#total span {
+    display: inline;
+    font-size: 24px;
+    font-weight: 500;
+
+    /* background: linear-gradient(to bottom, rgba(0,0,0,0) 25%,rgba(0,0,0,0.10) 100%); /* W3C */
+    /* border: 1px solid #ccc;
+    */
+}
+div#daily table {
+    width: 100%;
+}
+
+div#daily table td {
+}
+
+div#daily span.kwh-day, div#total span.totalKwh {
+    font-size: 28px;
+    font-weight: 500;
+}
+
+div#daily span.unit, div#total span.unit {
+    font-size: 16px;
+    font-weight: 200;
+    color: #666;
+    display: block;
+
+}
+div#daily h3, div#total h3, div#hourChartBox h3 {
+    font-size: 18px;
+    font-weight: 200;
+    color: #666;
+    padding: 0;
+    margin: 0 0 6px 0;
+}
+
+div#hourChartBox h3 {
+    margin: 0;
+}
 
 span.totalDecimal {
     color: #aaa;
