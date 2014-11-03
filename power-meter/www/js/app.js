@@ -1,10 +1,55 @@
-/**
- * App file for the
- * @type {{}}
+/*
+ * Power meter app. An express frontend to reading a power meter with a
+ * flashing led using a photo resistive sensor on an Arduino Uno board.
+ *
+ * This is most of all a toy experiment to get me up to speed on some of
+ * the latest web technologies.
+ *
+ * @author Thomas Malt <thomas@malt.no>
+ * @copyright Thomas Malt <thomas@malt.no>
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2013-2014 Thomas Malt <thomas@malt.no>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * App file for the power meter ionic app.
+ */
+
+/**
+ * meter - helper object literal to scope utility functions so that they
+ * don't mess with anything else.
+ */
 var meter = {};
+/**
+ * meter.initialize - object literal to store the initialisation functions
+ * to load the various graphs I'm going to use.
+ */
 meter.initialize = {};
+/**
+ * meter.load - object literal to store reloading functions for graphs.
+ */
+meter.load = {};
+
 meter.initialize.gauge = function (PowerWatts) {
     PowerWatts.get({interval: 10}, function(p) {
         meter.gauge = c3.generate({
@@ -70,10 +115,7 @@ meter.initialize.hourChart = function (PowerWatts) {
                     type: 'categorized'
                 },
                 y: {
-                    show: false,
-                    tick: {
-                        count: 4
-                    }
+                    show: false
                 }
             },
             grid: {
@@ -94,7 +136,7 @@ meter.initialize.hourChart = function (PowerWatts) {
                     values
                 ],
                 types: {
-                    data1: 'area'
+                    data1: 'area-spline'
                 },
                 colors: {
                     data1: '#43cee6'
@@ -105,13 +147,165 @@ meter.initialize.hourChart = function (PowerWatts) {
     });
 };
 
+meter.initialize.threeDaysChart = function (PowerKwh) {
+    PowerKwh.get({type: 'hour', count: 73}, function (d) {
+        var values = d.items.map(function(item) {
+            var date = new Date(item.timestamp);
+            return [
+                "" + date.getDate() + "/" + (date.getMonth()+1),
+                item.kwh
+            ];
+        });
+
+        values.unshift(['x', 'data1']);
+
+        console.log('Got hour data for 73 hours:', values);
+        meter.threeDaysChart = c3.generate({
+            bindto: '#three-days-chart',
+            size: { height: 148 },
+            padding: {
+                left: 20,
+                right: 20,
+                top: 0,
+                bottom: 0
+            },
+            legend: { show: false },
+            point: { show: false },
+            axis: {
+                x: {
+                    show: true,
+                    tick: {
+                        count: 4
+                        /* culling: {
+                            max: 9
+                        } */
+                    },
+                    type: 'category'
+                },
+                y: { show: false}
+            },
+            bar: {
+                width: {
+                    ratio: 1.0
+                }
+            },
+            grid: {
+                y: {
+                    lines: [
+                        {value: 2.0, text: '2 kWh'},
+                        {value: 4.0, text: '4 kWh'},
+                        {value: 6.0, text: '6 kWh'},
+                        {value: 8.0, text: '8 kWh'},
+                        {value: 10.0, text: '10 kWh'}
+                    ]
+                }
+            },
+            data: {
+                x: 'x',
+                rows: values,
+                types: {
+                    data1: 'area-spline'
+                },
+                colors: {
+                    data1: '#f0b840'
+                }
+            }
+        });
+    });
+};
+
+meter.initialize.monthChart = function (PowerKwh) {
+    PowerKwh.get({type: 'day', count: 62}, function (d) {
+        console.log('Got day data for 2 months', d);
+        var values = d.items.map(function(item) {
+            if (item === null) {
+                return ["", 0];
+            }
+            var date = new Date(item.timestamp);
+            return [
+                "" + date.getDate() + "/" + (date.getMonth()+1),
+                item.kwh
+            ];
+        });
+
+        values.unshift(['x', 'data1']);
+
+        console.log('Got day data for 2 months:', values);
+        meter.threeDaysChart = c3.generate({
+            bindto: '#month-chart',
+            size: { height: 148 },
+            padding: {
+                left: 20,
+                right: 20,
+                top: 0,
+                bottom: 0
+            },
+            legend: { show: false },
+            point: { show: false },
+            axis: {
+                x: {
+                    show: true,
+                    tick: {
+                        count: 8
+                        /* culling: {
+                         max: 9
+                         } */
+                    },
+                    type: 'category'
+                },
+                y: { show: false}
+            },
+            bar: {
+                width: {
+                    ratio: 0.6
+                }
+            },
+            grid: {
+                y: {
+                    lines: [
+                        {value: 25.0, text: '25 kWh'},
+                        {value: 50.0, text: '50 kWh'},
+                        {value: 75.0, text: '75 kWh'},
+                        {value: 100.0, text: '100 kWh'},
+                        {value: 125.0, text: '125 kWh'}
+                    ]
+                }
+            },
+            data: {
+                x: 'x',
+                rows: values,
+                types: {
+                    data1: 'area'
+                },
+                colors: {
+                    data1: '#f0b840'
+                }
+            }
+        });
+    });
+};
+
+
+meter.load.threeDaysChart = function (PowerKwh) {
+    PowerKwh.get({type: 'hour', count: 73}, function (d) {
+        var values = d.items.map(function(item) {
+            var date = new Date(item.timestamp);
+            return [
+                "" + date.getDate() + "/" + (date.getMonth()+1),
+                item.kwh
+            ];
+        });
+
+        meter.threeDaysChart.load({ rows: values });
+    });
+};
 
 var hourChart = {};
 
 var app = angular.module('power', ['ionic', 'powerServices']);
 
-app.run(['$ionicPlatform', 'PowerWatts',
-    function ($ionicPlatform, PowerWatts) {
+app.run(['$ionicPlatform', 'PowerWatts', 'PowerKwh',
+    function ($ionicPlatform, PowerWatts, PowerKwh) {
     $ionicPlatform.ready(function () {
         if (window.StatusBar) {
             StatusBar.styleDefault();
@@ -119,11 +313,13 @@ app.run(['$ionicPlatform', 'PowerWatts',
 
         meter.initialize.gauge(PowerWatts);
         meter.initialize.hourChart(PowerWatts);
+        meter.initialize.threeDaysChart(PowerKwh);
+        meter.initialize.monthChart(PowerKwh);
 
     });
 }]);
 
-app.controller('PowerCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKwh', '$interval',
+app.controller('DailyCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKwh', '$interval',
     '$ionicSlideBoxDelegate', '$ionicSideMenuDelegate',
     function(
         $scope, PowerWatts, PowerMeterTotal, PowerKwh,
@@ -131,6 +327,7 @@ app.controller('PowerCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
         ) {
         // meter.initialize();
         $scope.toggleLeft = function() {
+            console.log("toggle left in daily graphs");
             $ionicSideMenuDelegate.toggleLeft();
         };
 
@@ -188,6 +385,26 @@ app.controller('PowerCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
             });
         }, 60000);
 
+
+    }
+]);
+
+app.controller('WeeklyCtrl',
+    ['$scope', '$interval', '$ionicSlideBoxDelegate', '$ionicSideMenuDelegate', 'PowerKwh',
+    function (
+        $scope, $interval, $ionicSlideBoxDelegate, $ionicSideMenuDelegate, PowerKwh
+    ) {
+        $scope.toggleLeft = function() {
+            console.log("toggle left in weekly graphs");
+            $ionicSideMenuDelegate.toggleLeft();
+        };
+
+        /**
+         * Interaval handling reloading of the three days chart.
+         */
+        $interval(function () {
+            meter.load.threeDaysChart(PowerKwh);
+        }, 180000);
 
     }
 ]);

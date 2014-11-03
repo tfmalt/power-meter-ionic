@@ -27,10 +27,10 @@
 </head>
 <body ng-app="power">
 <ion-side-menus>
-    <ion-side-menu-content ng-controller="PowerCtrl">
+    <ion-side-menu-content>
         <ion-slide-box style="height: 100%;"
                        on-slide-changed="slideHasChanged($index)">
-            <ion-slide>
+            <ion-slide ng-controller="DailyCtrl">
                 <ion-header-bar class="bar-calm">
                     <button on-tap="toggleLeft()"
                         class="button button-icon icon ion-navicon-round">
@@ -40,17 +40,17 @@
                 <ion-pane>
                     <div class="box" id="#current">
                         <div id="meter"></div>
-                        <div id="watts">
+                        <div id="watts" class="graph-box">
                             <span class="value">{{watts}}</span>
                             <span class="unit">Watt</span>
                         </div>
-                        <div id="total">
+                        <div id="total" class="graph-box">
                             <h3>Meter total kWh</h3>
                             <div class="box">
                                 <span class="totalKwh">{{meterTotal}}</span>
                             </div>
                         </div>
-                        <div id="daily">
+                        <div id="daily" class="graph-box">
                             <table>
                                 <tr>
                                     <td>
@@ -66,14 +66,14 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="box" id="hourChartBox">
+                        <div class="box graph-box" id="hourChartBox">
                             <h3>Usage Last Hour</h3>
                             <div id="hourChart"></div>
                         </div>
                     </div>
                 </ion-pane>
             </ion-slide>
-            <ion-slide>
+            <ion-slide ng-controller="WeeklyCtrl">
                 <ion-header-bar class="bar-energized">
                     <button on-tap="toggleLeft()"
                             class="button button-icon icon ion-navicon-round">
@@ -81,6 +81,20 @@
                     <h1 class="title">Weekly Graphs</h1>
                 </ion-header-bar>
                 <ion-pane>
+                    <div class="box">
+                        <div class="graph-box" id="hourly-usage">
+                            <h3>kWh per hour for 3 days</h3>
+                            <div id="three-days-chart"></div>
+                        </div>
+                        <div class="graph-box" id="daily-usage">
+                            <h3>kWh per day for 2 months</h3>
+                            <div id="month-chart"></div>
+                        </div>
+                        <div class="graph-box" id="weekly-usage">
+                            <h3>kWh per week for a year</h3>
+                            <div id="year-chart"></div>
+                        </div>
+                    </div>
                 </ion-pane>
             </ion-slide>
             <ion-slide>
