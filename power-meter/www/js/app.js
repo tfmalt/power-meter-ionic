@@ -42,7 +42,6 @@ app.run(['$ionicPlatform', '$interval', 'PowerWatts', 'PowerKwh',
     $ionicPlatform.ready(function () {
         if (window.StatusBar) {
             StatusBar.styleDefault();
-            // StatusBar.hide();
         }
 
         meter.initialize.gauge(PowerWatts);
@@ -51,11 +50,6 @@ app.run(['$ionicPlatform', '$interval', 'PowerWatts', 'PowerKwh',
         meter.initialize.monthChart(PowerKwh);
         meter.initialize.weeklyChart(PowerKwh);
 
-        /* setTimeout(function () {
-            console.log("trying silent login");
-            gplus.trySilentLogin();
-        }, 30000);
-        */
     });
 }]);
 
