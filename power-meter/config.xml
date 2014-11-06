@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.ionicframework.powermeter302564" version="0.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>power-meter</name>
-  <description>
-        An Ionic Framework and Cordova project.
+<widget id="no.malt.powermeter" version="0.1.4" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>power-meter</name>
+    <description>
+        A hobby project to create a dashboard for my power meter 
+        using ionic and cordova.      
     </description>
     <author email="thomas@malt.no" href="https://power.malt.no/">
-      Thomas Malt
+        Thomas Malt
     </author>
-  <content src="index.html"/>
-  <access origin="*"/>
-  <preference name="webviewbounce" value="false"/>
-  <preference name="UIWebViewBounce" value="false"/>
-  <preference name="DisallowOverscroll" value="true"/>
-  <preference name="BackupWebStorage" value="none"/>
-  <feature name="StatusBar">
-    <param name="ios-package" value="CDVStatusBar" onload="true"/>
-  </feature>
+    <icon src="www/img/ios_icon-60.png" platform="ios" width="57" height="57" density="mdpi" />
+    <platform name="ios">
+        <!-- iOS 7.0+ -->
+        <!-- iPhone / iPod Touch  -->
+        <icon src="www/img/ios_icon-60.png" width="60" height="60" />
+        <icon src="www/img/ios_icon-60@2x.png" width="120" height="120" />
+    </platform>
+    <content src="index.html"/>
+    <access origin="*"/>
+    <preference name="webviewbounce" value="false"/>
+    <preference name="UIWebViewBounce" value="false"/>
+    <preference name="DisallowOverscroll" value="true"/>
+    <preference name="BackupWebStorage" value="none"/>
+    <feature name="StatusBar">
+        <param name="ios-package" value="CDVStatusBar" onload="true"/>
+    </feature>
 </widget>
