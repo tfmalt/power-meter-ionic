@@ -39,16 +39,11 @@
  * meter - helper object literal to scope utility functions so that they
  * don't mess with anything else.
  */
-var meter = {};
-/**
- * meter.initialize - object literal to store the initialisation functions
- * to load the various graphs I'm going to use.
- */
-meter.initialize = {};
-/**
- * meter.load - object literal to store reloading functions for graphs.
- */
-meter.load = {};
+var meter = {
+    weeklyHeight: 132,
+    initialize: {},
+    load: {}
+};
 
 meter.initialize.gauge = function (PowerWatts) {
     PowerWatts.get({interval: 10}, function(p) {
@@ -159,10 +154,9 @@ meter.initialize.threeDaysChart = function (PowerKwh) {
 
         values.unshift(['x', 'data1']);
 
-        console.log('Got hour data for 73 hours:', values);
         meter.threeDaysChart = c3.generate({
             bindto: '#three-days-chart',
-            size: { height: 148 },
+            size: { height: meter.weeklyHeight },
             padding: {
                 left: 20,
                 right: 20,
@@ -216,7 +210,6 @@ meter.initialize.threeDaysChart = function (PowerKwh) {
 
 meter.initialize.monthChart = function (PowerKwh) {
     PowerKwh.get({type: 'day', count: 62}, function (d) {
-        console.log('Got day data for 2 months', d);
         var values = d.items.map(function(item) {
             if (item === null) {
                 return ["", 0];
@@ -230,10 +223,9 @@ meter.initialize.monthChart = function (PowerKwh) {
 
         values.unshift(['x', 'data1']);
 
-        console.log('Got day data for 2 months:', values);
-        meter.threeDaysChart = c3.generate({
+        meter.monthChart = c3.generate({
             bindto: '#month-chart',
-            size: { height: 148 },
+            size: { height: meter.weeklyHeight },
             padding: {
                 left: 20,
                 right: 20,
@@ -285,6 +277,66 @@ meter.initialize.monthChart = function (PowerKwh) {
     });
 };
 
+meter.initialize.weeklyChart = function (PowerKwh) {
+    PowerKwh.get({type: 'week', count: 52}, function (d) {
+        var values = d.items.map(function(item) {
+            if (item === null) {
+                return [" ", 0];
+            }
+            var date = new Date(item.timestamp);
+            return [
+                "" + date.getDate() + "/" + (date.getMonth()+1),
+                item.kwh
+            ];
+        });
+
+        values.unshift(['x', 'data1']);
+
+        meter.weeklyChart = c3.generate({
+            bindto: '#weekly-chart',
+            size: { height: meter.weeklyHeight },
+            padding: {
+                left: 20,
+                right: 20,
+                top: 0,
+                bottom: 0
+            },
+            legend: { show: false },
+            point: { show: false },
+            axis: {
+                x: {
+                    show: true,
+                    tick: {
+                        count: 4
+                    },
+                    type: 'category'
+                },
+                y: { show: false}
+            },
+            grid: {
+                y: {
+                    lines: [
+                        {value: 200.0, text: '200 kWh'},
+                        {value: 400.0, text: '400 kWh'},
+                        {value: 600.0, text: '600 kWh'}
+                    ]
+                }
+            },
+            data: {
+                x: 'x',
+                rows: values,
+                types: {
+                    data1: 'area'
+                },
+                colors: {
+                    data1: '#f0b840'
+                }
+            }
+        });
+    });
+};
+
+
 
 meter.load.threeDaysChart = function (PowerKwh) {
     PowerKwh.get({type: 'hour', count: 73}, function (d) {
@@ -295,8 +347,28 @@ meter.load.threeDaysChart = function (PowerKwh) {
                 item.kwh
             ];
         });
+        values.unshift(['x', 'data1']);
 
         meter.threeDaysChart.load({ rows: values });
+    });
+};
+
+meter.load.weeklyChart = function (PowerKwh) {
+    PowerKwh.get({type: 'week', count: 52}, function (d) {
+        var values = d.items.map(function (item) {
+            if (item === null) {
+                return [" ", 0];
+            }
+            var date = new Date(item.timestamp);
+            return [
+                "" + date.getDate() + "/" + (date.getMonth() + 1),
+                item.kwh
+            ];
+        });
+
+        values.unshift(['x', 'data1']);
+
+        meter.weeklyChart.load({ rows: values });
     });
 };
 
@@ -315,6 +387,7 @@ app.run(['$ionicPlatform', 'PowerWatts', 'PowerKwh',
         meter.initialize.hourChart(PowerWatts);
         meter.initialize.threeDaysChart(PowerKwh);
         meter.initialize.monthChart(PowerKwh);
+        meter.initialize.weeklyChart(PowerKwh);
 
     });
 }]);
@@ -357,7 +430,6 @@ app.controller('DailyCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
 
                 values.unshift('data1');
                 times.unshift('x');
-                console.log("Got watts hour: ", Date());
 
                 meter.hourChart.load({
                     columns: [
@@ -400,12 +472,15 @@ app.controller('WeeklyCtrl',
         };
 
         /**
-         * Interaval handling reloading of the three days chart.
+         * Interval handling reloading of the three days chart.
          */
         $interval(function () {
             meter.load.threeDaysChart(PowerKwh);
         }, 180000);
 
+        $interval(function () {
+            meter.load.weeklyChart(PowerKwh);
+        }, 360000);
     }
 ]);
 
