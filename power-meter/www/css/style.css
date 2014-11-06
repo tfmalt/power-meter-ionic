@@ -130,16 +130,27 @@ span.totalDecimal {
     color: #aaa;
 }
 
-div#hourly-usage, div#daily-usage, div#weekly-usage {
+div#hourly-usage {
     position: relative;
-    top: 72px;
+    top: 88px;
 }
+
+div#daily-usage {
+    position: relative;
+    top: 80px;
+}
+
+div#weekly-usage {
+      position: relative;
+      top: 72px;
+  }
+
 
 div.graph-box {
     text-align: center;
 }
 
-div#three-days-chart, div#month-chart {
+div#three-days-chart, div#month-chart, div#weekly-chart {
     position: relative;
     top: -12px;
 }
