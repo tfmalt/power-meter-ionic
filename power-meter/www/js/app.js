@@ -46,9 +46,13 @@ app.run(['$ionicPlatform', '$interval', 'PowerWatts', 'PowerKwh',
 
         meter.initialize.gauge(PowerWatts);
         meter.initialize.hourChart(PowerWatts);
-        meter.initialize.threeDaysChart(PowerKwh);
-        meter.initialize.monthChart(PowerKwh);
-        meter.initialize.weeklyChart(PowerKwh);
+        // Delaying loading graphs on page two to give first page
+        // time to load.
+        setTimeout(function () {
+            meter.initialize.threeDaysChart(PowerKwh);
+            meter.initialize.monthChart(PowerKwh);
+            meter.initialize.weeklyChart(PowerKwh);
+        }, 3000);
 
     });
 }]);
