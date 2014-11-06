@@ -28,6 +28,8 @@ gplus.login = function() {
  * The code is exactly the same a login, except for the function name.
  */
 gplus.trySilentLogin = function() {
+    console.log("before alert");
+    console.log("after alert");
     window.plugins.googleplus.trySilentLogin(
         {
             'iOSApiKey': '230346417276-jut282tqmvcnnp7rumb11unjd8ar0qm8.apps.googleusercontent.com'
@@ -36,7 +38,7 @@ gplus.trySilentLogin = function() {
             alert("Success: ", obj);
         },
         function (err) {
-            alert("Error: ", err);
+            console.log("got error back: ", err);
         }
     );
 };
