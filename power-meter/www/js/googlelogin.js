@@ -2,11 +2,13 @@
  * Created by tm on 06/11/14.
  */
 
-var gplus = {};
+var gplus = {
+    iosClientId: '771757246460-qdf1o0815ic0kf1m4tsfgl2ar59rtn1k.apps.googleusercontent.com'
+};
 gplus.login = function() {
     console.log("google plus login called.");
     window.plugins.googleplus.login({
-        'iOSApiKey': '230346417276-jut282tqmvcnnp7rumb11unjd8ar0qm8.apps.googleusercontent.com'
+        'iOSApiKey': gplus.iosClientId
     },
         function (obj) {
             alert("Success: ", obj);
@@ -28,11 +30,9 @@ gplus.login = function() {
  * The code is exactly the same a login, except for the function name.
  */
 gplus.trySilentLogin = function() {
-    console.log("before alert");
-    console.log("after alert");
     window.plugins.googleplus.trySilentLogin(
         {
-            'iOSApiKey': '230346417276-jut282tqmvcnnp7rumb11unjd8ar0qm8.apps.googleusercontent.com'
+            'iOSApiKey': gplus.iosClientId
         },
         function (obj) {
             alert("Success: ", obj);
