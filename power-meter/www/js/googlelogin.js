@@ -72,6 +72,7 @@ window.onerror = function(what, line, file) {
     alert(what + '; ' + line + '; ' + file);
 };
 
-// function handleOpenURL (url) {
-//     document.querySelector("#feedback").innerHTML = "App was opened by URL: " + url;
-// }
+function handleOpenURL (url) {
+    // document.querySelector("#feedback").innerHTML = "App was opened by URL: " + url;
+    console.log("WTF: handle open url: ", url);
+}
