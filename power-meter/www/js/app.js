@@ -484,3 +484,10 @@ app.controller('WeeklyCtrl',
     }
 ]);
 
+app.controller('OptionsCtrl', ['$scope', function ($scope) {
+    $scope.handleLogin = function() {
+        console.log("got call to handle login.");
+        gplus.login();
+    }
+}]);
+
