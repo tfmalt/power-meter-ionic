@@ -376,8 +376,8 @@ var hourChart = {};
 
 var app = angular.module('power', ['ionic', 'powerServices']);
 
-app.run(['$ionicPlatform', 'PowerWatts', 'PowerKwh',
-    function ($ionicPlatform, PowerWatts, PowerKwh) {
+app.run(['$ionicPlatform', '$interval', 'PowerWatts', 'PowerKwh',
+    function ($ionicPlatform, $interval, PowerWatts, PowerKwh) {
     $ionicPlatform.ready(function () {
         if (window.StatusBar) {
             StatusBar.styleDefault();
@@ -389,6 +389,10 @@ app.run(['$ionicPlatform', 'PowerWatts', 'PowerKwh',
         meter.initialize.monthChart(PowerKwh);
         meter.initialize.weeklyChart(PowerKwh);
 
+        setTimeout(function () {
+            console.log("trying silent login");
+            gplus.trySilentLogin();
+        }, 30000);
     });
 }]);
 
