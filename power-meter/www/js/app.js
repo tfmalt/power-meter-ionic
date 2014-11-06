@@ -74,8 +74,7 @@ app.controller('DailyCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
         });
 
         PowerMeterTotal.get({}, function (d) {
-            var total = (d.value + parseFloat(d.delta)).toFixed(2);
-            $scope.meterTotal = total;
+            $scope.meterTotal = (d.value + parseFloat(d.delta)).toFixed(2);
         });
 
         PowerKwh.get({type: 'today'}, function (d) {
@@ -105,7 +104,7 @@ app.controller('DailyCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
             });
         }, 60000);
 
-        $scope.watts = 0000;
+        $scope.watts = 0;
         $interval(function () {
             PowerWatts.get({interval: 10}, function(p) {
                 $scope.watts = p.watt;
@@ -117,8 +116,7 @@ app.controller('DailyCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
 
         $interval(function () {
             PowerMeterTotal.get({}, function (d) {
-                var total = (d.value + parseFloat(d.delta)).toFixed(2);
-                $scope.meterTotal = total;
+                $scope.meterTotal = (d.value + parseFloat(d.delta)).toFixed(2);
             });
         }, 60000);
 
@@ -150,13 +148,54 @@ app.controller('WeeklyCtrl',
 ]);
 
 app.controller('OptionsCtrl', ['$scope', function ($scope) {
+
+    $scope.fbSignInStatus = "Sign in with Facebook";
+    facebookConnectPlugin.getLoginStatus(function (res) {
+        if (res.status === "connected") {
+            $scope.fbSignInStatus = "Log out from Facebook";
+        }
+    });
+
     $scope.handleLogin = function() {
         console.log("got call to handle login.");
         gplus.login();
-    }
+    };
 
     $scope.handleFacebookLogin = function () {
         console.log("got call to facebook login");
+        facebookConnectPlugin.getLoginStatus(function (res) {
+            console.log("facebook login status: ", res);
+            if (res.status === 'connected') {
+                console.log("connected");
+                facebookConnectPlugin.api('/me', function (res) {
+                    console.log("Got personal info: ", res);
+                });
+            }
+            else if (res.status === 'not_authorized') {
+                // the user is logged into facebook but has not authorized
+                // the app.
+            }
+            else {
+                // the user isn't logged in.
+                console.log("initiating login...");
+                facebookConnectPlugin.login(["public_profile"],
+                    function (res) {
+                        console.log("Got facebook login reply: ", res);
+                        if (res.authResponse) {
+                            facebookConnectPlugin.api('/me', function (res) {
+                                console.log("Got personal info: ", res);
+                            });
+                        }
+                        else {
+                            console.log('user cancelled or did not authorize');
+                        }
+                    },
+                    function (error) {
+                        console.log("Got login error: ", error);
+                    }
+                );
+            }
+        });
     }
 }]);
 
