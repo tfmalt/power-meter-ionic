@@ -52,4 +52,85 @@ powerServices.factory('PowerKwh', ['$resource',
     }
 ]);
 
-// /power/kwh/hour/73")
+/**
+ * A services factory to wrap the cordova facebook api into a well behaved
+ * angular service. returns an object, which is nice, and uses promises,
+ * which is nice.
+ */
+var fbServices = angular.module('fbServices', ['ng']);
+fbServices.factory('FBs', ['$q', function($q) {
+    // console.log("here we are in the factory facebook login");
+    var fbs = {};
+
+    /**
+     * Wrapper for the facebook login function tailored to my specific need.
+     *
+     * @returns promise
+     */
+    fbs.login = function () {
+        var deferred = $q.defer();
+
+        if (!window.facebookConnectPlugin) {
+            deferred.reject('facebookConnectPlugin does not exist');
+            return deferred.promise;
+        }
+
+        facebookConnectPlugin.login(["public_profile"],
+            function (res) {
+                if (res.authResponse) {
+                    deferred.resolve(res);
+                } else {
+                    deferred.reject("user cancelled or did not authorize");
+                }
+            },
+            function (error) {
+                deferred.reject(error)
+            }
+        );
+
+        return deferred.promise;
+    };
+
+    /**
+     * Wraps the getLoginStatus call in a promise
+     *
+     * @returns promise
+     */
+    fbs.getLoginStatus = function () {
+        var deferred = $q.defer();
+
+        if (!window.facebookConnectPlugin) {
+            deferred.reject('facebookConnectPlugin does not exist in scope.');
+            return deferred.promise;
+        }
+
+        facebookConnectPlugin.getLoginStatus(function (res) {
+            deferred.resolve(res);
+        });
+
+        return deferred.promise;
+    };
+
+    fbs.logout = function () {
+        var deferred = $q.defer();
+
+        if (!window.facebookConnectPlugin) {
+            deferred.reject('facebookConnectPlugin does not exist in scope.');
+            return deferred.promise;
+        }
+
+        facebookConnectPlugin.logout(
+            function (res) {
+                deferred.resolve(res);
+            },
+            function (err) {
+                deferred.reject(err);
+            }
+        );
+
+        return deferred.promise;
+    };
+
+    return fbs;
+}]);
+

@@ -35,11 +35,12 @@
  * App file for the power meter ionic app.
  */
 
-var app = angular.module('power', ['ionic', 'powerServices']);
+var app = angular.module('power', ['ionic', 'powerServices', 'fbServices']);
 
 app.run(['$ionicPlatform', '$interval', 'PowerWatts', 'PowerKwh',
     function ($ionicPlatform, $interval, PowerWatts, PowerKwh) {
     $ionicPlatform.ready(function () {
+        console.log("Got platform ready in run");
         if (window.StatusBar) {
             StatusBar.styleDefault();
         }
@@ -52,7 +53,7 @@ app.run(['$ionicPlatform', '$interval', 'PowerWatts', 'PowerKwh',
             meter.initialize.threeDaysChart(PowerKwh);
             meter.initialize.monthChart(PowerKwh);
             meter.initialize.weeklyChart(PowerKwh);
-        }, 3000);
+        }, 1000);
 
     });
 }]);
@@ -147,55 +148,80 @@ app.controller('WeeklyCtrl',
     }
 ]);
 
-app.controller('OptionsCtrl', ['$scope', function ($scope) {
+app.controller('OptionsCtrl', [
+    '$scope','$ionicPlatform', '$ionicBackdrop', '$timeout', 'FBs',
+    function ($scope, $ionicPlatform, $ionicBackdrop, $timeout, FBs) {
 
-    $scope.fbSignInStatus = "Sign in with Facebook";
-    facebookConnectPlugin.getLoginStatus(function (res) {
-        if (res.status === "connected") {
-            $scope.fbSignInStatus = "Log out from Facebook";
-        }
-    });
+        $scope.fbSignInStatus = "Sign in with Facebook";
 
-    $scope.handleLogin = function() {
-        console.log("got call to handle login.");
-        gplus.login();
-    };
+        $ionicPlatform.ready(function () {
+            console.log("Got platform ready in options controller");
 
-    $scope.handleFacebookLogin = function () {
-        console.log("got call to facebook login");
-        facebookConnectPlugin.getLoginStatus(function (res) {
-            console.log("facebook login status: ", res);
-            if (res.status === 'connected') {
-                console.log("connected");
-                facebookConnectPlugin.api('/me', function (res) {
-                    console.log("Got personal info: ", res);
-                });
-            }
-            else if (res.status === 'not_authorized') {
-                // the user is logged into facebook but has not authorized
-                // the app.
-            }
-            else {
-                // the user isn't logged in.
-                console.log("initiating login...");
-                facebookConnectPlugin.login(["public_profile"],
+            FBs.getLoginStatus().then(
+                function (res) {
+                    console.log("got getLoginStatus promise: ", res);
+                    meter.fb.login = res;
+                    if (res.status === "connected") {
+                        $scope.fbSignInStatus = "Log out from Facebook";
+                        console.log("got 'connected' from getLoginStatus");
+                    }
+                },
+                function (err) {
+                    console.log("got error from getloginstatus: ", err);
+                }
+            );
+        });
+
+        $scope.handleLogin = function () {
+            console.log("got call to handle login.");
+            gplus.login();
+        };
+
+        $scope.handleFacebookLogin = function () {
+            console.log("got call to facebook login");
+            $ionicBackdrop.retain();
+            $timeout(function () {
+                $ionicBackdrop.release();
+            }, 2000);
+
+            // facebookConnectPlugin.api('/me/picture?redirect=false', [],
+            if (meter.fb.login.status === "connected") {
+                console.log("Initiating logout...");
+                FBs.logout().then(
                     function (res) {
-                        console.log("Got facebook login reply: ", res);
-                        if (res.authResponse) {
-                            facebookConnectPlugin.api('/me', function (res) {
-                                console.log("Got personal info: ", res);
-                            });
+                        console.log("got logout promise: ", res);
+                        meter.fb.login.status = "unknown";
+                        return FBs.getLoginStatus();
+                    },
+                    function (err) {
+                        console.log("got logout error: ", err);
+                    }
+                ).then(
+                    function (res) {
+                        console.log("Did I get a status object: ", res);
+                        meter.fb.login = res;
+                        if (res.status !== "connected") {
+                            $scope.fbSignInStatus = "Sign in with Facebook";
                         }
-                        else {
-                            console.log('user cancelled or did not authorize');
+                    }
+                );
+
+            } else {
+                console.log("initiating login...");
+                FBs.login().then(
+                    function (res) {
+                        console.log("got login result from promise: ", res);
+                        meter.fb.login = res;
+                        if (res.status === "connected") {
+                            $scope.fbSignInStatus = "Log out from Facebook";
                         }
                     },
                     function (error) {
-                        console.log("Got login error: ", error);
+                        console.log("got login error from promise: ", error);
                     }
                 );
             }
-        });
+        };
     }
-}]);
+]);
 

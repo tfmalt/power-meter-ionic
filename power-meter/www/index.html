@@ -116,11 +116,14 @@
     </ion-side-menu-content>
     <ion-side-menu side="left" ng-controller="OptionsCtrl">
         <ion-header-bar class="bar-dark">
-            <i class="button-icon icon ion-person"></i>
             <h1 class="title">Options</h1>
         </ion-header-bar>
         <ion-pane class="has-header" style="background-color: #666">
             <ion-list>
+                <ion-item class="item-avatar-left item-dark">
+                    <img src="" class="icon ion-person">
+                    You're not signed in yet.
+                </ion-item>
                 <ion-item ng-click="handleLogin()"
                           class="item-icon-left item-dark">
                     <i class="icon ion-social-googleplus"></i>

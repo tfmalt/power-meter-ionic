@@ -38,7 +38,10 @@
 var meter = {
     weeklyHeight: 132,
     initialize: {},
-    load: {}
+    load: {},
+    fb: {
+        login: null
+    }
 };
 
 meter.initialize.gauge = function (PowerWatts) {
