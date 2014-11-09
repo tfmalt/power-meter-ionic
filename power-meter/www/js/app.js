@@ -153,30 +153,25 @@ app.controller('OptionsCtrl', [
     function ($scope, $ionicPlatform, $ionicBackdrop, $timeout, FBs) {
 
         $scope.fbSignInStatus = "Sign in with Facebook";
+        $scope.fbIconStatus = "";
 
         $ionicPlatform.ready(function () {
             console.log("Got platform ready in options controller");
 
-            FBs.getLoginStatus().then(
-                function (res) {
-                    console.log("got getLoginStatus promise: ", res);
-                    meter.fb.login = res;
-                    if (res.status === "connected") {
-                        $scope.fbSignInStatus = "Log out from Facebook";
-                        console.log("got 'connected' from getLoginStatus");
-                    }
-                },
-                function (err) {
-                    console.log("got error from getloginstatus: ", err);
-                }
-            ).then(
-                function () {
-                    if (meter.fb.login.status !== "connected") return;
-                    if (meter.fb.user !== null) return;
-
-                    console.log("after status need to get user info.");
-                }
-            );
+            FBs.getLoginStatus().then(function (res) {
+                console.log("got getLoginStatus promise: ", res);
+                meter.fb.login = res;
+            }).then(function () {
+                if (meter.fb.login.status !== "connected") return null;
+                return FBs.getUserProfile();
+            }).then(function (res) {
+                meter.fb.user = res;
+                if (meter.fb.login.status !== "connected") return null;
+                $scope.fbSignInStatus = "Log out from Facebook";
+                $scope.fbIconStatus = "facebook-logged-in-icon";
+            }).catch(function (err) {
+                console.log("got error from get login status: ", err);
+            });
         });
 
         $scope.handleLogin = function () {
@@ -185,31 +180,23 @@ app.controller('OptionsCtrl', [
         };
 
         $scope.handleFacebookLogin = function () {
-            console.log("got call to facebook login");
-            $ionicBackdrop.retain();
-            $timeout(function () {
-                $ionicBackdrop.release();
-            }, 2000);
-
-            // facebookConnectPlugin.api('/me/picture?redirect=false', [],
             if (meter.fb.login.status === "connected") {
-                console.log("Initiating logout...");
                 FBs.logout().then(
-                    function (res) {
-                        console.log("got logout promise: ", res);
+                    function () {
                         meter.fb.login.status = "unknown";
                         return FBs.getLoginStatus();
-                    },
-                    function (err) {
-                        console.log("got logout error: ", err);
                     }
                 ).then(
                     function (res) {
-                        console.log("Did I get a status object: ", res);
                         meter.fb.login = res;
                         if (res.status !== "connected") {
                             $scope.fbSignInStatus = "Sign in with Facebook";
+                            $scope.fbIconStatus = "";
                         }
+                    }
+                ).catch(
+                    function (err) {
+                        console.log("got logout error: ", err);
                     }
                 );
 
@@ -221,6 +208,7 @@ app.controller('OptionsCtrl', [
                         meter.fb.login = res;
                         if (res.status === "connected") {
                             $scope.fbSignInStatus = "Log out from Facebook";
+                            $scope.fbIconStatus = "facebook-logged-in-icon";
                         }
                     }
                 ).then(
@@ -244,41 +232,4 @@ app.controller('OptionsCtrl', [
     }
 ]);
 
-app.directive('powerUserItem', ['$interval', function ($interval) {
-    return {
-        restrict: 'E',
-        template: '<ion-item class="item-thumbnail-left item-dark power-user-item">' +
-            '<img src="{{userImageUrl}}">' +
-            '<h2>{{loginStatus}}</h2>' +
-            '<span id="user-status">{{userStatus}}</span> ' +
-            '<span id="user-role">{{userRole}}</span>',
-        link: function (scope, element, attrs) {
-            console.log("link got called:");
 
-            function updateLoginStatus() {
-                console.log("running updateLoginStatus: ", meter.fb);
-                if (
-                    meter.fb.login !== null &&
-                    meter.fb.user !== null &&
-                    meter.fb.login.status === "connected"
-                ) {
-                    scope.loginStatus = meter.fb.user.name;
-                    scope.userStatus = "Signed in as";
-                    scope.userRole = "Administrator";
-                    scope.userImageUrl = meter.fb.user.pictureUrl;
-                } else {
-                    scope.loginStatus = "You're not signed in";
-                    scope.userStatus = "Please sign in with";
-                    scope.userRole = "Google+ or Facebook";
-                    scope.userImageUrl = "img/person_128.png";
-                }
-            }
-
-            updateLoginStatus();
-
-            $interval(function () {
-                updateLoginStatus();
-            }, 1000);
-        }
-    };
-}]);
