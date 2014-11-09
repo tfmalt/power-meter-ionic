@@ -141,6 +141,16 @@ fbServices.factory('FBs', ['$q', function($q) {
 
         facebookConnectPlugin.api('/me', ["public_profile"],
             function (res) {
+                facebookConnectPlugin.api('/me/picture?type=large&redirect=false', [],
+                    function (data) {
+                        console.log("got data from /me/picture: ", data, res);
+                        res.pictureUrl = data.data.url;
+                        deferred.resolve(res);
+                    },
+                    function (err) {
+                        deferred.reject(err);
+                    }
+                )
                 deferred.resolve(res);
             },
             function (err) {
