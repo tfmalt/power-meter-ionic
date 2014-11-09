@@ -153,6 +153,7 @@ app.controller('OptionsCtrl', [
     function ($scope, $ionicPlatform, $ionicBackdrop, $timeout, FBs) {
 
         $scope.fbSignInStatus = "Sign in with Facebook";
+        $scope.loginStatus = "You're not signed in";
 
         $ionicPlatform.ready(function () {
             console.log("Got platform ready in options controller");
@@ -225,3 +226,25 @@ app.controller('OptionsCtrl', [
     }
 ]);
 
+app.directive('powerUserItem', ['$interval', function ($interval) {
+   return {
+       restrict: 'E',
+       template: '<ion-item class="item-thumbnail-left item-dark power-user-item">' +
+            '<img src="{{userImageUrl}}">' +
+            '<h2>{{loginStatus}}</h2>' +
+            '<span id="user-status">{{userStatus}}</span> ' +
+            '<span id="user-role">{{userRole}}</span>'
+       ,
+       link: function (scope, element, attrs) {
+           console.log("link got called:");
+
+           scope.userImageUrl = "img/person_128.png";
+           scope.userStatus = "Please sign in with";
+           scope.userRole = "Google+ or Facebook";
+
+           $interval(function() {
+                console.log("inside directive timeout: ", meter.fb);
+           }, 1000);
+       }
+   };
+}]);
