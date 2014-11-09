@@ -167,3 +167,7 @@ div#three-days-chart, div#month-chart, div#weekly-chart {
 .power-user-item span {
     font-size: 15px;
 }
+
+.power-user-item img {
+    border-radius: 50%;
+}
