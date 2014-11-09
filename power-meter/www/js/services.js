@@ -131,6 +131,26 @@ fbServices.factory('FBs', ['$q', function($q) {
         return deferred.promise;
     };
 
+    fbs.getUserProfile = function () {
+        var deferred = $q.defer();
+
+        if (!window.facebookConnectPlugin) {
+            deferred.reject('facebookConnectPlugin does not exist in scope.');
+            return deferred.promise;
+        }
+
+        facebookConnectPlugin.api('/me', ["public_profile"],
+            function (res) {
+                deferred.resolve(res);
+            },
+            function (err) {
+                deferred.reject(err);
+            }
+        );
+
+        return deferred.promise;
+    };
+
     return fbs;
 }]);
 
