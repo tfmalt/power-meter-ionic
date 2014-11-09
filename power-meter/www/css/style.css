@@ -171,3 +171,35 @@ div#three-days-chart, div#month-chart, div#weekly-chart {
 .power-user-item img {
     border-radius: 50%;
 }
+
+.facebook-logged-in-icon {
+    background-color: #3B5998;
+}
+
+
+.sign-in-screen {
+    padding: 32px 8px;
+    font-size: 17px;
+    color: #666;
+    background-color: #eee;
+}
+
+.sign-in-screen button.ion-social-googleplus {
+    background-color: #dd4b39;
+}
+.sign-in-screen button.ion-social-facebook {
+    background-color: #3B5998;
+}
+
+.sign-in-button-box {
+    padding: 10px;
+}
+
+.sign-in-screen .item-body p:first-child {
+    margin-top: 0;
+}
+
+.sign-in-screen .item-avatar-left span {
+    color: #666;
+    font-size: 14px;
+}
