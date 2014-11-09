@@ -154,3 +154,16 @@ div#three-days-chart, div#month-chart, div#weekly-chart {
     position: relative;
     top: -12px;
 }
+
+.item-dark h2 {
+    color: white;
+}
+.item-dark span {
+    color: #ddd;
+    white-space: normal;
+    text-overflow: none;
+}
+
+.power-user-item span {
+    font-size: 15px;
+}
