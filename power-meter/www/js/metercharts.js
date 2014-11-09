@@ -40,7 +40,8 @@ var meter = {
     initialize: {},
     load: {},
     fb: {
-        login: null
+        login: null,
+        user: null
     }
 };
 
