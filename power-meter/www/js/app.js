@@ -138,35 +138,63 @@ app.controller('WeeklyCtrl',
         /**
          * Interval handling reloading of the three days chart.
          */
-        $interval(function () {
+        $interval(function() {
             meter.load.threeDaysChart(PowerKwh);
         }, 180000);
 
-        $interval(function () {
+        $interval(function() {
             meter.load.weeklyChart(PowerKwh);
         }, 360000);
     }
 ]);
 
 app.controller('OptionsCtrl', [
-    '$scope','$ionicPlatform', '$ionicBackdrop', '$timeout', 'FBs',
-    function ($scope, $ionicPlatform, $ionicBackdrop, $timeout, FBs) {
+    '$scope','$ionicPlatform', '$ionicBackdrop', '$ionicModal', '$timeout', 'FBs',
+    function ($scope, $ionicPlatform, $ionicBackdrop, $ionicModal, $timeout, FBs) {
 
         $scope.fbSignInStatus = "Sign in with Facebook";
         $scope.fbIconStatus = "";
 
+        $ionicModal.fromTemplateUrl('power-not-signed-in.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function(modal) {
+            $scope.modal = modal;
+        });
+
+        $scope.openModal = function() {
+            $scope.modal.show();
+        };
+
+        $scope.closeModal = function() {
+            $scope.modal.hide();
+        };
+
+        $scope.$on('$destroy', function() {
+            $scope.modal.remove();
+        });
+
+        /**
+         * ready function for the options controller.
+         * called on app start when dom is ready.
+         */
         $ionicPlatform.ready(function () {
             console.log("Got platform ready in options controller");
 
             FBs.getLoginStatus().then(function (res) {
                 console.log("got getLoginStatus promise: ", res);
                 meter.fb.login = res;
-            }).then(function () {
-                if (meter.fb.login.status !== "connected") return null;
-                return FBs.getUserProfile();
-            }).then(function (res) {
+
+                if (meter.fb.login.status === "connected") {
+                    return FBs.getUserProfile();
+                } else {
+                    $scope.openModal();
+                    return null;
+                }
+            }).then(function(res) {
                 meter.fb.user = res;
                 if (meter.fb.login.status !== "connected") return null;
+
                 $scope.fbSignInStatus = "Log out from Facebook";
                 $scope.fbIconStatus = "facebook-logged-in-icon";
             }).catch(function (err) {
@@ -174,59 +202,56 @@ app.controller('OptionsCtrl', [
             });
         });
 
-        $scope.handleLogin = function () {
+
+
+        $scope.handleGoogleLogin = function () {
             console.log("got call to handle login.");
-            gplus.login();
+            // gplus.login();
+        };
+
+        $scope.handleFacebookLogout = function () {
+            FBs.logout().then(function() {
+                meter.fb.login.status = "unknown";
+                return FBs.getLoginStatus();
+            }).then(function(res) {
+                meter.fb.login = res;
+                if (res.status !== "connected") {
+                    $scope.fbSignInStatus = "Sign in with Facebook";
+                    $scope.fbIconStatus = "";
+                    // $timeout(function() {
+                    $scope.openModal();
+                    // }, 1000);
+                }
+            }).catch(function(err) {
+                console.log("got logout error: ", err);
+            });
         };
 
         $scope.handleFacebookLogin = function () {
-            if (meter.fb.login.status === "connected") {
-                FBs.logout().then(
-                    function () {
-                        meter.fb.login.status = "unknown";
-                        return FBs.getLoginStatus();
-                    }
-                ).then(
-                    function (res) {
-                        meter.fb.login = res;
-                        if (res.status !== "connected") {
-                            $scope.fbSignInStatus = "Sign in with Facebook";
-                            $scope.fbIconStatus = "";
-                        }
-                    }
-                ).catch(
-                    function (err) {
-                        console.log("got logout error: ", err);
-                    }
-                );
-
+            if (meter.fb.login !== null && meter.fb.login.status === "connected") {
+                // We now we are logged in. Unfortunately this is a toggle.
+                $scope.handleFacebookLogout();
             } else {
                 console.log("initiating login...");
-                FBs.login().then(
-                    function (res) {
-                        console.log("got login result from promise: ", res);
-                        meter.fb.login = res;
-                        if (res.status === "connected") {
-                            $scope.fbSignInStatus = "Log out from Facebook";
-                            $scope.fbIconStatus = "facebook-logged-in-icon";
-                        }
+                FBs.login().then(function(res) {
+                    console.log("got login result from promise: ", res);
+                    meter.fb.login = res;
+                    if (res.status !== "connected") return null;
+                    $scope.fbSignInStatus = "Log out from Facebook";
+                    $scope.fbIconStatus = "facebook-logged-in-icon";
+                    $timeout(function() {
+                    $scope.closeModal();
+                    }, 1000);
+                    return FBs.getUserProfile();
+                }).then(function(res) {
+                    console.log("got user profile: ", res);
+                    meter.fb.user = res;
+                }).catch(function(error) {
+                    console.log("got login error from promise: ", error);
+                    if (error.match(/Permission denied/)) {
+                        console.log("YES: permission denied");
                     }
-                ).then(
-                    function () {
-                        if (meter.fb.login.status !== "connected") return;
-                        console.log("After successful login fetching info");
-                        return FBs.getUserProfile();
-                    }
-                ).then(
-                    function (res) {
-                        console.log("got user profile: ", res);
-                        meter.fb.user = res;
-                    }
-                ).catch(
-                    function (error) {
-                        console.log("got login error from promise: ", error);
-                    }
-                );
+                });
             }
         };
     }
