@@ -170,6 +170,13 @@ app.controller('OptionsCtrl', [
                 function (err) {
                     console.log("got error from getloginstatus: ", err);
                 }
+            ).then(
+                function () {
+                    if (meter.fb.login.status !== "connected") return;
+                    if (meter.fb.user !== null) return;
+
+                    console.log("after status need to get user info.");
+                }
             );
         });
 
@@ -216,7 +223,18 @@ app.controller('OptionsCtrl', [
                         if (res.status === "connected") {
                             $scope.fbSignInStatus = "Log out from Facebook";
                         }
-                    },
+                    }
+                ).then(
+                    function () {
+                        if (meter.fb.login.status !== "connected") return;
+                        console.log("After successful login fetching info");
+                        return FBs.getUserProfile();
+                    }
+                ).then(
+                    function (res) {
+                        console.log("got user profile: ", res);
+                    }
+                ).catch(
                     function (error) {
                         console.log("got login error from promise: ", error);
                     }
