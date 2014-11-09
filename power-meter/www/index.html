@@ -26,6 +26,7 @@
     <script src="js/metercharts.js"></script>
     <script src="js/services.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/directives.js"></script>
 </head>
 <body ng-app="power">
 <ion-side-menus>
@@ -128,7 +129,7 @@
                 </ion-item>
                  <ion-item ng-click="handleFacebookLogin()"
                           class="item-icon-left item-dark">
-                    <i class="icon ion-social-facebook"></i>
+                    <i class="icon ion-social-facebook {{fbIconStatus}}"></i>
                     {{fbSignInStatus}}
                 </ion-item>
                 <ion-item ng-click="handleSettings()"
@@ -141,5 +142,37 @@
         </ion-pane>
     </ion-side-menu>
 </ion-side-menus>
+<script id="power-not-signed-in.html" type="text/ng-template">
+    <ion-modal-view>
+        <ion-pane class="sign-in-screen">
+            <div class="list card">
+                <div class="item item-avatar-left">
+                    <img src="img/person_128.png">
+                    <h2>You're not signed in</h2>
+                    <span>Not authorized for use</span>
+                </div>
+                <div class="item item-body">
+                    <p>
+                        This app gives you access to the real time
+                        electrical power consumption in the authors house.
+                    </p>
+                    <p>
+                        To use this app you need to register and sign in with
+                        either Google+ and Facebook.
+                    </p>
+                </div>
+            </div>
+            <div class="sign-in-button-box">
+                <button ng-click="handleGoogleLogin()" class="button button-block button-assertive icon-left ion-social-googleplus">
+                    Sign in with Google
+                </button>
+                <p style="text-align: center">- or -</p>
+                <button ng-click="handleFacebookLogin()" class="button button-block button-positive icon-left ion-social-facebook">
+                    Sign in with Facebook
+                </button>
+            </div>
+        </ion-pane>
+    </ion-modal-view>
+</script>
 </body>
 </html>
