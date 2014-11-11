@@ -144,7 +144,7 @@
 </ion-side-menus>
 <script id="power-not-signed-in.html" type="text/ng-template">
     <ion-modal-view>
-        <ion-pane class="sign-in-screen">
+        <ion-pane id="sign-in-screen">
             <div class="list card">
                 <div class="item item-avatar-left">
                     <img src="img/person_128.png">
@@ -153,23 +153,24 @@
                 </div>
                 <div class="item item-body">
                     <p>
-                        This app gives you access to the real time
-                        electrical power consumption in the authors house.
+                        This is a test app, giving you access to the real time
+                        electricity usage data from my household.
                     </p>
                     <p>
-                        To use this app you need to register and sign in with
-                        either Google+ and Facebook.
+                        To use this app you need to sign in with
+                        either Google+ and Facebook. Then you will be
+                        authorized to access the data and API's.
                     </p>
                 </div>
-            </div>
-            <div class="sign-in-button-box">
-                <button ng-click="handleGoogleLogin()" class="button button-block button-assertive icon-left ion-social-googleplus">
-                    Sign in with Google
-                </button>
-                <p style="text-align: center">- or -</p>
-                <button ng-click="handleFacebookLogin()" class="button button-block button-positive icon-left ion-social-facebook">
-                    Sign in with Facebook
-                </button>
+                <div class="item item-body sign-in-button-box">
+                    <button ng-click="handleGoogleLogin()" class="button button-block button-assertive icon-left ion-social-googleplus">
+                        Sign in with Google
+                    </button>
+                    <div style="text-align: center">- or -</div>
+                    <button ng-click="handleFacebookLogin()" class="button button-block button-positive icon-left ion-social-facebook">
+                        Sign in with Facebook
+                    </button>
+                </div>
             </div>
         </ion-pane>
     </ion-modal-view>
