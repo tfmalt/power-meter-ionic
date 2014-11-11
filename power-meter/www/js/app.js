@@ -237,11 +237,14 @@ app.controller('OptionsCtrl', [
                     console.log("got login result from promise: ", res);
                     meter.fb.login = res;
                     if (res.status !== "connected") return null;
+
                     $scope.fbSignInStatus = "Log out from Facebook";
                     $scope.fbIconStatus = "facebook-logged-in-icon";
+
                     $timeout(function() {
-                    $scope.closeModal();
+                        $scope.closeModal();
                     }, 1000);
+
                     return FBs.getUserProfile();
                 }).then(function(res) {
                     console.log("got user profile: ", res);
