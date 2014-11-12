@@ -149,8 +149,8 @@ app.controller('WeeklyCtrl',
 ]);
 
 app.controller('OptionsCtrl', [
-    '$scope','$ionicPlatform', '$ionicBackdrop', '$ionicModal', '$timeout', 'FBs',
-    function ($scope, $ionicPlatform, $ionicBackdrop, $ionicModal, $timeout, FBs) {
+    '$scope','$ionicPlatform', '$ionicBackdrop', '$ionicModal', '$resource', '$timeout', 'FBs',
+    function ($scope, $ionicPlatform, $ionicBackdrop, $ionicModal, $resource, $timeout, FBs) {
 
         $scope.fbSignInStatus = "Sign in with Facebook";
         $scope.fbIconStatus = "";
@@ -206,7 +206,15 @@ app.controller('OptionsCtrl', [
 
         $scope.handleGoogleLogin = function () {
             console.log("got call to handle login.");
-            // gplus.login();
+            var GooglePlus = $resource('https://accounts.google.com/o/oauth2/auth');
+            GooglePlus.get({
+                'scope': 'email profile',
+                'redirect_uri': 'urn:ietf:wg:oauth:2.0:oob',
+                'response_type': 'code',
+                'client_id': '771757246460-qdf1o0815ic0kf1m4tsfgl2ar59rtn1k.apps.googleusercontent.com'
+            }, function (res, heads) {
+                console.log("got result from google: ", res, heads);
+            })
         };
 
         $scope.handleFacebookLogout = function () {
