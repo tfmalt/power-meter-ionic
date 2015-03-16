@@ -5,12 +5,15 @@
 var gplus = {
     iosClientId: '771757246460-qdf1o0815ic0kf1m4tsfgl2ar59rtn1k.apps.googleusercontent.com'
 };
+
+
 gplus.login = function() {
     console.log("google plus login called.");
     window.plugins.googleplus.login({
         'iOSApiKey': gplus.iosClientId
     },
         function (obj) {
+            console.log("Success: ", obj);
             alert("Success: ", obj);
         },
         function (err) {
@@ -30,15 +33,18 @@ gplus.login = function() {
  * The code is exactly the same a login, except for the function name.
  */
 gplus.trySilentLogin = function() {
+    console.log("Trying silent login.");
     window.plugins.googleplus.trySilentLogin(
         {
             'iOSApiKey': gplus.iosClientId
         },
         function (obj) {
+            console.log("Success: ", obj);
             alert("Success: ", obj);
         },
         function (err) {
             console.log("got error back: ", err);
+            gplus.login();
         }
     );
 };

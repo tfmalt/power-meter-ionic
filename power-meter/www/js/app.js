@@ -1,5 +1,5 @@
 /*
- * Power meter app. An express frontend to reading a power meter with a
+ * Power meter app. A frontend to reading a power meter with a
  * flashing led using a photo resistive sensor on an Arduino Uno board.
  *
  * This is most of all a toy experiment to get me up to speed on some of
@@ -10,7 +10,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2013-2014 Thomas Malt <thomas@malt.no>
+ * Copyright (c) 2013-2015 Thomas Malt <thomas@malt.no>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -203,24 +203,19 @@ app.controller('OptionsCtrl', [
         });
 
 
-
         $scope.handleGoogleLogin = function () {
             console.log("got call to handle login.");
-            var GooglePlus = $resource('https://accounts.google.com/o/oauth2/auth');
-            GooglePlus.get({
-                'scope': 'email profile',
-                'redirect_uri': 'urn:ietf:wg:oauth:2.0:oob',
-                'response_type': 'code',
-                'client_id': '771757246460-qdf1o0815ic0kf1m4tsfgl2ar59rtn1k.apps.googleusercontent.com'
-            }, function (res, heads) {
-                console.log("got result from google: ", res, heads);
-            })
+            gplus.trySilentLogin();
         };
 
         $scope.handleFacebookLogout = function () {
             FBs.logout().then(function() {
                 meter.fb.login.status = "unknown";
                 return FBs.getLoginStatus();
+                console.log("Success: ", obj);
+                console.log("Success: ", obj);
+                console.log("Success: ", obj);
+                console.log("Success: ", obj);
             }).then(function(res) {
                 meter.fb.login = res;
                 if (res.status !== "connected") {
