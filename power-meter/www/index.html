@@ -2,20 +2,21 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport"
-          content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <meta name="format-detection" content="telephone=no">
     <title>Power Meter Dashboard</title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <link href="lib/c3/c3.css" rel="stylesheet">
+    <link href="lib/chartist/dist/chartist.min.css" rel="stylesheet">
 
     <script src="lib/d3/d3.min.js" charset="utf-8"></script>
     <script src="lib/c3/c3.min.js"></script>
 
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/angular-resource/angular-resource.min.js"></script>
+    <script src="lib/angular-chartist.js/dist/angular-chartist.min.js"></script>
 
     <script src="cordova.js"></script>
 
@@ -28,17 +29,16 @@
 <body ng-app="power">
 <ion-side-menus>
     <ion-side-menu-content>
-        <ion-slide-box style="height: 100%;"
-                       on-slide-changed="slideHasChanged($index)">
+        <ion-slide-box style="height: 100%;" on-slide-changed="slideHasChanged($index)">
             <ion-slide ng-controller="DailyCtrl">
                 <ion-header-bar class="bar-calm">
-                    <button on-tap="toggleLeft()"
-                        class="button button-icon icon ion-navicon-round">
+                    <button on-tap="toggleLeft()" class="button button-icon icon ion-navicon-round">
                     </button>
                     <h1 class="title">Current Usage</h1>
                 </ion-header-bar>
                 <ion-pane>
                     <div class="box" id="#current">
+                        <!-- <chartist class="ct-chart ct-square"></chartist> -->
                         <div id="meter"></div>
                         <div id="watts" class="graph-box">
                             <span class="value">{{watts}}</span>
@@ -75,8 +75,7 @@
             </ion-slide>
             <ion-slide ng-controller="WeeklyCtrl">
                 <ion-header-bar class="bar-energized">
-                    <button on-tap="toggleLeft()"
-                            class="button button-icon icon ion-navicon-round">
+                    <button on-tap="toggleLeft()" class="button button-icon icon ion-navicon-round">
                     </button>
                     <h1 class="title">Weekly Graphs</h1>
                 </ion-header-bar>
@@ -99,8 +98,7 @@
             </ion-slide>
             <ion-slide>
                 <ion-header-bar class="bar-assertive">
-                    <button on-tap="toggleLeft()"
-                            class="button button-icon icon ion-navicon-round">
+                    <button on-tap="toggleLeft()" class="button button-icon icon ion-navicon-round">
                     </button>
                     <h1 class="title">Monthly Graphs</h1>
                 </ion-header-bar>
@@ -119,18 +117,15 @@
         <ion-pane class="has-header" style="background-color: #666">
             <ion-list>
                 <power-user-item></power-user-item>
-                <ion-item ng-click="handleGoogleLogin()"
-                          class="item-icon-left item-dark">
+                <ion-item ng-click="handleGoogleLogin()" class="item-icon-left item-dark">
                     <i class="icon ion-social-googleplus"></i>
                     Sign in with Google+
                 </ion-item>
-                 <ion-item ng-click="handleFacebookLogin()"
-                          class="item-icon-left item-dark">
+                 <ion-item ng-click="handleFacebookLogin()" class="item-icon-left item-dark">
                     <i class="icon ion-social-facebook {{fbIconStatus}}"></i>
                     {{fbSignInStatus}}
                 </ion-item>
-                <ion-item ng-click="handleSettings()"
-                          class="item-icon-left item-dark">
+                <ion-item ng-click="handleSettings()" class="item-icon-left item-dark">
                     <i class="icon ion-ios7-gear"></i>
                     Settings ...
                 </ion-item>

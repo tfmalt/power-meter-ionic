@@ -35,7 +35,7 @@
  * App file for the power meter ionic app.
  */
 
-var app = angular.module('power', ['ionic', 'powerServices', 'fbServices']);
+var app = angular.module('power', ['ionic', 'powerServices', 'angular-chartist', 'fbServices']);
 
 app.run(['$ionicPlatform', '$interval', 'PowerWatts', 'PowerKwh',
     function ($ionicPlatform, $interval, PowerWatts, PowerKwh) {
@@ -71,11 +71,12 @@ app.controller('DailyCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
         };
 
         PowerKwh.get({type: 'day', count: 1}, function (d) {
-            $scope.kwhYesterday = d.items[0].kwh.toFixed(2);
+            $scope.kwhYesterday = d.list[0].kwh.toFixed(2);
         });
 
         PowerMeterTotal.get({}, function (d) {
-            $scope.meterTotal = (d.value + parseFloat(d.delta)).toFixed(2);
+            // console.log("PowerMeterTotal.get a:", d);
+            $scope.meterTotal = (d.total).toFixed(2);
         });
 
         PowerKwh.get({type: 'today'}, function (d) {
@@ -86,12 +87,17 @@ app.controller('DailyCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
             PowerKwh.get({type: 'today'}, function (d) {
                 $scope.kwhToday = d.kwh.toFixed(2);
             });
+            PowerKwh.get({type: 'day', count: 1}, function (d) {
+                $scope.kwhYesterday = d.list[0].kwh.toFixed(2);
+            });
         }, 60000);
 
         $interval(function () {
             PowerWatts.get({interval: 'hour'}, function (d) {
-                var values = d.items.map(function(item) { return item[1]; });
-                var times  = d.items.map(function(item) { return item[0]; });
+                var values = d.items.map(function(item) { return item.watts; });
+                var times  = d.items.map(function(item) { 
+                    return (new Date(item.timestamp)).toTimeString().slice(0,5);
+                });
 
                 values.unshift('data1');
                 times.unshift('x');
@@ -107,7 +113,8 @@ app.controller('DailyCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
 
         $scope.watts = 0;
         $interval(function () {
-            PowerWatts.get({interval: 10}, function(p) {
+            PowerWatts.get({interval: 4}, function(p) {
+                // console.log("PowerWatts.get:", p);
                 $scope.watts = p.watt;
                 meter.gauge.load({
                     columns: [['data', p.watt]]
@@ -117,7 +124,8 @@ app.controller('DailyCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
 
         $interval(function () {
             PowerMeterTotal.get({}, function (d) {
-                $scope.meterTotal = (d.value + parseFloat(d.delta)).toFixed(2);
+                // console.log("PowerMeterTotal.get b:", d);
+                $scope.meterTotal = (d.total).toFixed(2);
             });
         }, 60000);
 

@@ -17,6 +17,10 @@
   "cordovaPlugins": [
     "org.apache.cordova.statusbar",
     "/Users/tm/src/phonegap-facebook-plugin",
-    "https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git"
+    "https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git",
+    "com.google.playservices"
+  ],
+  "cordovaPlatforms": [
+    "ios"
   ]
 }
