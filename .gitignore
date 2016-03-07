@@ -1,3 +1,5 @@
 .idea
 power-meter/npm-debug.log
 power-meter/google_client_id
+power-meter/.io-config.json
+.gitignore
