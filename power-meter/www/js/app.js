@@ -99,7 +99,7 @@ app.controller('DailyCtrl', ['$scope', 'PowerWatts', 'PowerMeterTotal', 'PowerKw
                     return (new Date(item.timestamp)).toTimeString().slice(0,5);
                 });
 
-                values.unshift('data1');
+                values.unshift('watts');
                 times.unshift('x');
 
                 meter.hourChart.load({
